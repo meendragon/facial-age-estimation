@@ -269,7 +269,8 @@ test 데이터로는 evaluation_base_kor.py에서와 동일하게, 미리 test�
 ---
 **evaluation/evaluation_multitrain.py**
 
-공란
+Multitrain 구조 기반 모델의 **나이 예측 성능을 평가하는 메인 루틴**이 포함된 파일입니다.
+이 파일은 SSL 기반 VCOP 인코더와 **한국인 전용 회귀기 모델(Korean Fine-tuned Regressor)**의 예측을 가중 평균 방식으로 조합해 최종 예측을 수행합니다.
 
 ---
 ## ⚙️ 설치 안내
