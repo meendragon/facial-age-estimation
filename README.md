@@ -12,7 +12,7 @@
 본 프로젝트에서는 다음 네 가지 실험 조건을 통해 모델 성능을 비교합니다:
 
 1. **Baseline Age Regression Model**  
-   사전학습 없이 일반 얼굴 이미지로 학습한 기본 나이 예측 모델
+   사전학습 없이 일반 얼굴 이미지(UTKFace)로 학습한 기본 나이 예측 모델
 
 2. **Korean Fine-tuned Model**  
    베이스라인 모델을 한국인 얼굴 이미지로 파인튜닝한 모델
@@ -59,7 +59,7 @@ project/
 │   ├── train/                       # 학습 스크립트
 │   │   ├── __init__.py
 │   │   ├── functions.py
-│   │   ├── train_base_to_kor.py           # ImageNet → Korean 데이터 파인튜닝
+│   │   ├── finetune_base_to_kor.ipynb     # ImageNet → Korean 데이터 파인튜닝
 │   │   ├── train_downstream.py            # Pretrained 인코더 기반 Age Regression
 │   │   ├── train_korean_finetuned.py      # 한국 이미지 전용 모델 파인튜닝
 │   │   ├── train_multitrain.py            # VCOP + Age Regression 손실 동시 학습
@@ -78,7 +78,7 @@ project/
 │   │   ├── pretrained_weight_korean.pt
 │   │   └── vcop_mini.pth
 │
-│   ├── loader/                     # 데이터 로딩 및 전처리
+│   ├── loader/                     # 한국인 이미지셋 로딩 및 전처리
 │   │   ├── custom_dataset_dataloader_korean.py     # 커스텀 한국 이미지 로더
 │   │   └── custom_dataset_datasplitter_korean.py   # 학습/검증/테스트 분할 모듈
 │
@@ -99,7 +99,7 @@ project/
 
 `data/`에 업로드해둔 데이터를 사용하면 되며 원본 데이터 다운로드를 링크를 통해 하고싶다면
 
-학습에 사용된 원본 데이터는 아래 링크에서 수동 다운로드 후,  
+학습에 사용된 원본 데이터를 아래 링크에서 수동 다운로드 후,  
 `data/` 디렉토리 아래에 배치해야 합니다:
 
 | 구분 | 링크 | 설명 |
@@ -107,7 +107,30 @@ project/
 | AIHub 한국인 얼굴 시계열 데이터 | [https://www.aihub.or.kr/aihubdata/data/view.do?dataSetSn=71415](https://www.aihub.or.kr/aihubdata/data/view.do?dataSetSn=71415) | 동일 인물의 다양한 연령대 얼굴 이미지 시퀀스 |
 | MegaAge-Asian | [https://www.dropbox.com/scl/fi/brq5o467fl2oz2u5oz0ng/megaage_asian.zip?rlkey=beyju63xv56jtyjuhn30367ae&dl=0](https://www.dropbox.com/scl/fi/brq5o467fl2oz2u5oz0ng/megaage_asian.zip?rlkey=beyju63xv56jtyjuhn30367ae&dl=0) | 아시아인 얼굴 이미지 + 나이 레이블|
 ---
+📂 주요 코드 파일 설명 – 사전학습 (Finetuning Baseline with Korean imageset)
 
+---
+
+**models/base_model.py**
+Baseline 모델 및, Baseline 모델을 한국인 이미지로 finetune한 모델의 구조를 정의하는 파일입니다.
+Baseline 모델은 Resnet50을 기반으로 하며, 비교적 간단한 FC 레이어를 가집니다.
+한국인 이미지로 finetune한 모델은 기존 Baseline 모델에 비해 더 깊은 FC 레이어를 가집니다.
+이는 기존에 비해 복잡한 연령 패턴을 잘 파악할 수 있도록 도와줍니다.
+
+---
+
+**train/base_to_kor.py**
+Baseline 모델을 한국인 이미지셋으로 finetune하기 위해 필요한 모듈들이 정의된 파일입니다.
+전체 학습 과정은 아래와 같으며, 이를 위한 모듈들이 내부에 정의되어 있습니다.
+
+- 모델 초기화
+- 새로운 모델에 Base Model의 가중치로부터 백본 가중치만 로드 (FC 레이어는 재정의되며, 따라서 로드하지 않습니다)
+- 백본과 FC 레이어에 서로 다른 LR을 적용 (이는 백본에는 사전 학습된 가중치가 적용되었지만, FC 레이어는 재정의되어 초기화되었으므로, FC 레이어에 더 높은 LR을 적용하기 위함입니다.)
+- 학습 진행
+- 에폭 별 체크포인트 저장
+- 학습 결과 시각화
+
+---
 📂 주요 코드 파일 설명 – 사전학습 (VCOP)
 
 ---
