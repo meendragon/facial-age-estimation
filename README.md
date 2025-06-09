@@ -54,43 +54,36 @@ project/
 │   ├── preTextData/                # VCOP 학습용 시계열 이미지 시퀀스
 │   ├── megaage_asian/              # MegaAge-Asian 데이터셋
 │   └── korean_image#1/             # 한국인 얼굴 이미지 (정제 및 전처리 완료본)
-│
 ├── src/                             # 소스 코드 디렉토리
 │   ├── train/                       # 학습 스크립트
 │   │   ├── __init__.py
 │   │   ├── functions.py
-│   │   ├── finetune_base_to_kor.ipynb     # ImageNet → Korean 데이터 파인튜닝
+│   │   ├── train_base_to_kor.ipynb        # Resnet50 → Korean 데이터 파인튜닝
 │   │   ├── train_downstream.py            # Pretrained 인코더 기반 Age Regression
 │   │   ├── train_korean_finetuned.py      # 한국 이미지 전용 모델 파인튜닝
 │   │   ├── train_multitrain.py            # VCOP + Age Regression 손실 동시 학습
 │   │   └── train_vcop.py                  # VCOP 사전학습 (순서 예측)
-│
 │   ├── models/                     # 모델 정의
 │   │   ├── __init__.py
-│   │   ├── age_regressor.py
-│   │   ├── base_model.py
-│   │   ├── r21d_mini.py
-│   │   └── vcop_head.py
-│
+│   │   ├── age_regressor.py         # SSL 이후 다운스트림 모델 구조 정의
+│   │   ├── base_model.py            # Baseline 및 finetune된 모델 구조 정의
+│   │   ├── r21d_mini.py             # 기존 R(2+1)D 구조를 간소화한 모델 구조 정의
+│   │   └── vcop_head.py             # 실제 SSL에 사용되는 모델 구조 정의
 │   ├── weights/                    # 학습된 모델 가중치 파일
 │   │   ├── age_regression.pth
 │   │   ├── legacy_weight.pt
 │   │   ├── pretrained_weight_korean.pt
 │   │   └── vcop_mini.pth
-│
 │   ├── loader/                     # 한국인 이미지셋 로딩 및 전처리
 │   │   ├── custom_dataset_dataloader_korean.py     # 커스텀 한국 이미지 로더
 │   │   └── custom_dataset_datasplitter_korean.py   # 학습/검증/테스트 분할 모듈
-│
 │   └── evaluation/                 # 성능 평가 스크립트
 │       ├── __init__.py
-│       ├── evaluate_base.py
-│       ├── evaluate_downstream.py
-│       ├── evaluate_korean_finetuned.py
-│       ├── evaluate_multitrain.py
-│       └── evaluate_vcop.py
-│
-└── README.md                       # 이 문서
+│       ├── evaluate_base_kor.py           # Base model 및 Korean_finetuned Model 평가
+│       ├── evaluate_downstream.py         # downstream된 SSL 모델 단독 평가
+│       ├── evaluate_multitrain.py         # multitrain 모델 평가
+│       └── evaluate_vcop.py               # SSL 모델의 순서 맞추기 정확도 평가
+├── README.md                       # 이 문서
 └── requirements.txt  
 
 ---
@@ -205,9 +198,46 @@ Self-Supervised Learning(VCOP) 이후 학습된 인코더를 기반으로 **얼�
 
 👉 이 학습 루틴은 사전학습된 시계열 표현이 **나이 회귀에 실제로 효과가 있는지 평가하는 핵심 절차**입니다.
 
+---
 
+📂 주요 코드 파일 설명 – evaluation 관련
 
+---
+**evaluation/evaluation_vcop.py**
 
+SSL 모델의 **순서 맞추기 성능을 평가하는 메인 루틴**이 포함된 파일입니다.
+이 파일은 vcop 모델의 성능을 평가하며, 아래와 같은 평가 지표를 제시해줍니다.
+vcop model의 평가 지표로는 
+Top-1 Accuracy (단일 정확도) : 모델이 가장 확률이 높은 순열(permutation)을 정확히 예측한 비율
+Top-k Accuracy (상위 k개 정확도) : 모델이 예측한 상위 k개 순열 중 정답이 포함된 비율
+Kendall's Tau (켄달 타우) : 두 순열 간 순위 상관관계 측정 (값 범위: -1 ~ 1, -1이면 역순, 0이면 상관관계 존재하지 않음, 순서 일치 시 1) 
+Spearman's Rho (스피어만 로) : 두 순열의 순위 간 피어슨 상관계수 (값 범위: -1 ~ 1, -1이면 역순, 0이면 상관관계 존재하지 않음, 순서 일치 시 1)
+Exact Match Ratio (완전 일치율) : 예측 순열이 정답과 완전히 동일한 비율
+을 사용합니다.
+test 데이터로는 시계열 이미지 시퀀스를 미리 분할해둔 test 데이터를 활용합니다.
+
+---
+**evaluation/evaluation_base_kor.py**
+
+Base 모델 및 korean_finetuned 모델의 **나이 예측 성능을 평가하는 메인 루틴**이 포함된 파일입니다.
+이 파일은 두 모델 각각을 평가하면서, test 데이터셋에 대한 각각의 MAE(Mean Absolute Error)값을 제시합니다.
+이를 통해 두 모델 간 성능 차이를 확인할 수 있도록 해줍니다.
+test 데이터로는 미리 test로 분할해둔 megaage_asian의 데이터를 활용합니다.
+
+---
+**evaluation/evaluation_downstream.py**
+
+"SSL 모델을 downstream task를 수행할 수 있도록 변환한 모델"의 **나이 예측 성능을 평가하는 메인 루틴**이 포함된 파일입니다.
+이 파일은 위 모델의 성능을 평가하며, 아래와 같은 평가 지표를 제시해줍니다.
+MAE : Mean Absolute Error, 평균 절대 오차. 예측값과 실제값의 차이의 절대값의 평균를 나타냅니다.
+MSE : Mean Squared Error, 평균 제곱 오차. 예측값과 실제값의 차이의 제곱의 평균을 나타냅니다.
+RMSE : Root MSE, 평균 제곱근 오차. MSE의 제곱근을 나타냅니다.
+test 데이터로는 evaluation_base_kor.py에서와 동일하게, 미리 test로 분할해둔 megaage_asian의 데이터를 활용합니다.
+
+---
+**evaluation/evaluation_multitrain.py**
+
+공란
 
 ---
 ## ⚙️ 설치 안내
