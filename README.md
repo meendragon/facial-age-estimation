@@ -94,6 +94,8 @@ project/
 
 ---
 ```
+---
+
 📂 주요 코드 파일 설명 – 사전학습 (VCOP)
 
 ---
@@ -117,3 +119,51 @@ VCOP 태스크를 위한 **분류 헤드(classification head)** 정의 파일입
 
 👉 이 구조는 시퀀스 순서 예측 정확도를 극대화하도록 설계되어 있으며,  
 **인코더가 시간적 순서감(time-awareness)을 학습하도록 돕는 핵심 구성 요소**입니다.
+
+---
+
+**train/train_vcop.py**  
+VCOP 사전학습을 수행하는 메인 학습 루틴이 정의된 파일입니다.  
+`train_vcop` 함수는 다음과 같은 과정을 통해 모델을 학습합니다:
+
+- `MiniR2Plus1D` 인코더와 `VCOPN` 분류 헤드를 연결하여 모델을 구성합니다.  
+- 입력 데이터는 `DataLoader`를 통해 배치 단위로 로딩되며, 손실 함수로는 `CrossEntropyLoss`를 사용합니다.  
+- 학습은 `config` 설정값에 따라 진행되며, `optimizer`, 학습률(`lr`), 에폭 수(`num_epochs`), `patience` 등을 통해 조절됩니다.
+- 검증(validation) 데이터에 대한 정확도와 손실을 매 epoch 마다 출력하며, **Early Stopping 및 모델 저장** 기능도 포함되어 있습니다.
+
+이 함수는 사전학습된 가중치를 저장하고 최종적으로 학습된 `VCOPN` 모델을 반환합니다.
+
+---
+
+📂 주요 코드 파일 설명 – 다운스트림 (Age Regression)
+
+---
+
+**models/age_regressor.py**  
+Self-Supervised Learning(VCOP) 이후 학습된 인코더를 기반으로 **얼굴 나이 회귀를 수행하는 모델 구조**가 정의된 파일입니다.  
+입력은 시계열 형태의 이미지 텐서 `(B, C, T, H, W)`이며, 구조는 다음과 같습니다:
+
+- Temporal 평균 풀링을 통해 시간 차원을 축소: `(B, C, T, H, W) → (B, C, H, W)`
+- ResNet 스타일의 간단한 head 구성:
+  - 1x1 Convolution → ReLU → AdaptiveAvgPool2d → Flatten → Linear(128 → 1)
+- 최종 출력은 단일 실수 값 `(B,)` 형태의 나이 예측 결과입니다.
+
+👉 이 구조는 **VCOP 인코더가 내재화한 시계열적 표현**을 효과적으로 활용하여 단일 이미지 기반 나이 예측을 수행할 수 있도록 설계되었습니다.
+
+---
+
+**train/train_downstream.py**  
+사전학습된 VCOP 인코더를 기반으로 **나이 회귀 모델을 학습하는 메인 루틴**이 포함된 파일입니다.
+
+- `train_downstream()` 함수는 다음의 과정을 수행합니다:
+  1. `MiniR2Plus1D` 인코더 + `VCOPN` 헤드 → VCOP 모델 로드 및 base encoder 추출  
+  2. `AgeRegressor`에 encoder를 연결하여 전체 회귀 모델 구성  
+  3. 입력 이미지에 여러 augmentation을 적용하여 `(T, C, H, W)` 시퀀스로 구성  
+  4. `MSELoss` 기준으로 회귀 손실 계산  
+  5. 인코더는 작은 학습률로, 회귀 head는 일반 학습률로 따로 최적화  
+  6. `CosineAnnealingLR`로 learning rate 조절  
+  7. `warmup_epochs` 동안 early stopping 비활성화
+
+- 매 epoch마다 훈련 손실, 검증 손실을 출력하며, **최적 모델은 `.pth`로 저장**됩니다.
+
+👉 이 학습 루틴은 사전학습된 시계열 표현이 **나이 회귀에 실제로 효과가 있는지 평가하는 핵심 절차**입니다.
