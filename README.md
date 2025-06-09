@@ -34,13 +34,15 @@ VCOP 기반 사전학습을 통해 인코더는 얼굴 이미지 간의 **시계
 
 이를 통해 단일 이미지 기반 회귀에서도 시계열적인 노화 패턴을 포착할 수 있으며,  
 **2D 이미지 입력만으로도 더 풍부한 노화 정보를 반영**할 수 있을 것으로 기대됩니다.
+
 ---
 
 ## 팀원
+
 - 20233127 김민형  
 - 20201463 박동민  
 - 20211429 위명준  
-- 20201502 정현우  
+- 20201502 정현우
 
 ---
 
@@ -50,37 +52,37 @@ VCOP 기반 사전학습을 통해 인코더는 얼굴 이미지 간의 **시계
 project/
 ├── data/                            # 데이터 디렉토리
 │   ├── preTextData/                # VCOP 학습용 시계열 이미지 시퀀스
-│   ├── megaage_asian/             # MegaAge-Asian 데이터셋
-│   └── korean_image#1/            # 한국인 얼굴 이미지 (정제 및 전처리 완료본)
+│   ├── megaage_asian/              # MegaAge-Asian 데이터셋
+│   └── korean_image#1/             # 한국인 얼굴 이미지 (정제 및 전처리 완료본)
 │
 ├── src/                             # 소스 코드 디렉토리
-│   ├── train/                      # 학습 스크립트
+│   ├── train/                       # 학습 스크립트
 │   │   ├── __init__.py
 │   │   ├── functions.py
 │   │   ├── train_base_to_kor.py           # ImageNet → Korean 데이터 파인튜닝
 │   │   ├── train_downstream.py            # Pretrained 인코더 기반 Age Regression
 │   │   ├── train_korean_finetuned.py      # 한국 이미지 전용 모델 파인튜닝
-│   │   ├── train_multitrain.py            # Multi-task 학습 (VCOP + Age Regression)
+│   │   ├── train_multitrain.py            # VCOP + Age Regression 손실 동시 학습
 │   │   └── train_vcop.py                  # VCOP 사전학습 (순서 예측)
 │
-│   ├── models/                    # 모델 정의
+│   ├── models/                     # 모델 정의
 │   │   ├── __init__.py
 │   │   ├── age_regressor.py
 │   │   ├── base_model.py
 │   │   ├── r21d_mini.py
 │   │   └── vcop_head.py
 │
-│   ├── weights/                   # 학습된 모델 가중치 파일
+│   ├── weights/                    # 학습된 모델 가중치 파일
 │   │   ├── age_regression.pth
 │   │   ├── legacy_weight.pt
 │   │   ├── pretrained_weight_korean.pt
 │   │   └── vcop_mini.pth
 │
-│   ├── loader/                    # 데이터 로딩 및 전처리
-│   │   ├── custom_dataset_dataloader_korean.py    # 커스텀 한국 이미지 로더
-│   │   └── custom_dataset_datasplitter_korean.py  # 학습/검증/테스트 분할 모듈
+│   ├── loader/                     # 데이터 로딩 및 전처리
+│   │   ├── custom_dataset_dataloader_korean.py     # 커스텀 한국 이미지 로더
+│   │   └── custom_dataset_datasplitter_korean.py   # 학습/검증/테스트 분할 모듈
 │
-│   └── evaluation/                # 성능 평가 스크립트
+│   └── evaluation/                 # 성능 평가 스크립트
 │       ├── __init__.py
 │       ├── evaluate_base.py
 │       ├── evaluate_downstream.py
@@ -89,18 +91,21 @@ project/
 │       └── evaluate_vcop.py
 │
 └── README.md                       # 이 문서
-### 📂 주요 코드 파일 설명 – 사전학습 (VCOP)
 
-#### `models/r21d_mini.py`
+---
+```
+📂 주요 코드 파일 설명 – 사전학습 (VCOP)
 
+---
+
+**models/r21d_mini.py**  
 VCOP 사전학습에서 사용하는 인코더 정의 파일입니다.  
-영상 시계열 데이터를 처리하기 위해 **R(2+1)D 구조를 간소화한 `MiniR2Plus1D`** 클래스를 포함하고 있으며,  
+영상 시계열 데이터를 처리하기 위해 **R(2+1)D 구조를 간소화한 MiniR2Plus1D 클래스**를 포함하고 있으며,  
 입력 시퀀스로부터 **공간적·시간적 특징(Spatiotemporal Features)** 을 추출하는 역할을 합니다.
 
 ---
 
-#### `models/vcop_head.py`
-
+**models/vcop_head.py**  
 VCOP 태스크를 위한 **분류 헤드(classification head)** 정의 파일입니다.  
 인코더의 출력 특징을 기반으로, 입력된 시퀀스의 올바른 순서를 예측하는 데 사용됩니다.
 
@@ -108,8 +113,7 @@ VCOP 태스크를 위한 **분류 헤드(classification head)** 정의 파일입
 
 - 인코더로부터 입력을 받아 `(B, C, T, H, W)` 형태의 피처맵을 출력  
 - `AdaptiveAvgPool3d(1)`을 통해 전체 시공간 차원을 평균 풀링하여 `(B, C)` 벡터로 축소  
-- 완전 연결층(`Fully Connected Layers`)을 거쳐 시퀀스 순열 수 `factorial(tuple_len)`에 해당하는 분류 결과 출력  
+- 완전 연결층(Fully Connected Layers)을 거쳐 시퀀스 순열 수 `factorial(tuple_len)`에 해당하는 분류 결과 출력
 
-👉 이 구조는 **얼마나 정확하게 시퀀스 순서를 예측할 수 있는가**를 학습하는 데 최적화되어 있으며,  
-인코더에 **시간 순서 감각(time-awareness)** 을 효과적으로 주입하는 역할을 합니다.
-
+👉 이 구조는 시퀀스 순서 예측 정확도를 극대화하도록 설계되어 있으며,  
+**인코더가 시간적 순서감(time-awareness)을 학습하도록 돕는 핵심 구성 요소**입니다.
