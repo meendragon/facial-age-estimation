@@ -97,13 +97,15 @@ project/
 ```
 ## 📦 데이터셋 다운로드 안내
 
+`data/`에 업로드해둔 데이터를 사용하면 되며 원본 데이터 다운로드를 링크를 통해 하고싶다면
+
 학습에 사용된 원본 데이터는 아래 링크에서 수동 다운로드 후,  
 `data/` 디렉토리 아래에 배치해야 합니다:
 
 | 구분 | 링크 | 설명 |
 |------|------|------|
 | AIHub 한국인 얼굴 시계열 데이터 | [https://www.aihub.or.kr/aihubdata/data/view.do?dataSetSn=71415](https://www.aihub.or.kr/aihubdata/data/view.do?dataSetSn=71415) | 동일 인물의 다양한 연령대 얼굴 이미지 시퀀스 |
-| MegaAge-Asian | [https://www.dropbox.com/scl/fi/brq5o467fl2oz2u5oz0ng/megaage_asian.zip?rlkey=beyju63xv56jtyjuhn30367ae&dl=0](https://www.dropbox.com/scl/fi/brq5o467fl2oz2u5oz0ng/megaage_asian.zip?rlkey=beyju63xv56jtyjuhn30367ae&dl=0) | 아시아인 얼굴 이미지 + 연속적 나이 레이블 포함 |
+| MegaAge-Asian | [https://www.dropbox.com/scl/fi/brq5o467fl2oz2u5oz0ng/megaage_asian.zip?rlkey=beyju63xv56jtyjuhn30367ae&dl=0](https://www.dropbox.com/scl/fi/brq5o467fl2oz2u5oz0ng/megaage_asian.zip?rlkey=beyju63xv56jtyjuhn30367ae&dl=0) | 아시아인 얼굴 이미지 + 나이 레이블|
 ---
 
 📂 주요 코드 파일 설명 – 사전학습 (VCOP)
@@ -177,3 +179,42 @@ Self-Supervised Learning(VCOP) 이후 학습된 인코더를 기반으로 **얼�
 - 매 epoch마다 훈련 손실, 검증 손실을 출력하며, **최적 모델은 `.pth`로 저장**됩니다.
 
 👉 이 학습 루틴은 사전학습된 시계열 표현이 **나이 회귀에 실제로 효과가 있는지 평가하는 핵심 절차**입니다.
+
+
+
+
+
+
+
+---
+
+## ▶️ 실행 방법 (Step-by-Step)
+
+본 프로젝트는 목적에 따라 분리된 `.ipynb` 노트북 파일들을 실행하는 방식으로 구성되어 있습니다.  
+Colab 또는 Jupyter 환경에서 아래 파일 중 **해당 실험 목적에 맞는 노트북을 실행**하시면 됩니다.
+
+### 🧪 실험별 실행 파일 목록
+
+| 노트북 파일명 | 설명 |
+|---------------|------|
+| `ssl-preTextTask.ipynb` | VCOP 기반 Self-Supervised 순서 예측 사전학습 수행 |
+| `ssl-regression.ipynb` | 사전학습된 인코더를 활용한 얼굴 나이 회귀 학습 |
+| `finetune_base_to_kor.ipynb` | 베이스 모델을 한국인 얼굴 데이터에 파인튜닝 |
+| `basemodel-eval.ipynb` | 베이스 모델의 일반적 회귀 성능 평가 |
+| `main.py` | 전체 학습을 통합 실행할 수 있는 Python 메인 스크립트 (옵션) |
+
+> ✅ 사전 설정 파일은 `config.py`, `korean_config.py` 등에서 정의되며,  
+> 경로, 하이퍼파라미터, 모델 저장 위치 등을 조정할 수 있습니다.
+
+---
+
+### 📌 기본 실행 흐름
+
+1. **사전학습 (VCOP)**  
+   → `ssl-preTextTask.ipynb` 실행
+
+2. **다운스트림 학습 (나이 예측)**  
+   → `ssl-regression.ipynb` 또는 `finetune_base_to_kor.ipynb` 실행
+
+3. **성능 평가**  
+   → `basemodel-eval.ipynb` 등 평가 전용 노트북 실행
