@@ -185,8 +185,16 @@ Self-Supervised Learning(VCOP) 이후 학습된 인코더를 기반으로 **얼�
 
 
 ---
+## ⚙️ 설치 안내
 
+본 프로젝트는 PyTorch 기반으로 구현되었으며, 필요한 라이브러리는 `requirements.txt` 파일을 통해 설치할 수 있습니다.
 
+### 🔧 설치 방법
+
+```bash
+pip install -r requirements.txt
+```
+---
 ## ▶️ 실행 방법 (Step-by-Step)
 
 본 프로젝트는 목적에 따라 분리된 `.ipynb` 노트북 파일들을 실행하는 방식으로 구성되어 있습니다.  
