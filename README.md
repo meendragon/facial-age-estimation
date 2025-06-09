@@ -50,47 +50,54 @@ VCOP 기반 사전학습을 통해 인코더는 얼굴 이미지 간의 **시계
 
 ```bash
 project/
-├── data/                            # 데이터 디렉토리
-│   ├── preTextData/                # VCOP 학습용 시계열 이미지 시퀀스
-│   ├── megaage_asian/              # MegaAge-Asian 데이터셋
-│   └── korean_image#1/             # 한국인 얼굴 이미지 (정제 및 전처리 완료본)
-├── src/                             # 소스 코드 디렉토리
-│   ├── train/                       # 학습 스크립트
+├── data/                            # 📁 데이터 디렉토리
+│   ├── preTextData/                # 🔹 VCOP 학습용 시계열 이미지 시퀀스
+│   ├── megaage_asian/              # 🔹 MegaAge-Asian 원본 및 전처리 데이터
+│   └── korean_image#1/             # 🔹 한국인 얼굴 이미지셋 (전처리 완료본)
+│
+├── src/                             # 📁 소스 코드 디렉토리
+│   ├── train/                       # 🔧 학습 관련 스크립트
 │   │   ├── __init__.py
-│   │   ├── functions.py
-│   │   ├── train_base_to_kor.ipynb        # Resnet50 → Korean 데이터 파인튜닝
-│   │   ├── train_downstream.py            # Pretrained 인코더 기반 Age Regression
-│   │   ├── train_korean_finetuned.py      # 한국 이미지 전용 모델 파인튜닝
-│   │   ├── train_multitrain.py            # VCOP + Age Regression 손실 동시 학습
-│   │   └── train_vcop.py                  # VCOP 사전학습 (순서 예측)
-│   ├── models/                     # 모델 정의
+│   │   ├── functions.py                      # 🔹 공통 함수 모음
+│   │   ├── train_base_to_kor.ipynb          # 🔹 ResNet50 기반 한국 이미지 파인튜닝
+│   │   ├── train_downstream.py              # 🔹 VCOP → Age Regression 다운스트림 학습
+│   │   ├── train_korean_finetuned.py        # 🔹 Base → Korean 이미지 파인튜닝 학습
+│   │   ├── train_multitrain.py              # 🔹 두 모델의 손실을 공유하는 멀티 트레이닝
+│   │   └── train_vcop.py                    # 🔹 VCOP 사전학습 (순서 예측 태스크)
+│
+│   ├── models/                     # 🧠 모델 구조 정의
 │   │   ├── __init__.py
-│   │   ├── age_regressor.py         # SSL 이후 다운스트림 모델 구조 정의
-│   │   ├── base_model.py            # Baseline 및 finetune된 모델 구조 정의
-│   │   ├── r21d_mini.py             # 기존 R(2+1)D 구조를 간소화한 모델 구조 정의
-│   │   └── vcop_head.py             # 실제 SSL에 사용되는 모델 구조 정의
-│   ├── weights/                    # 학습된 모델 가중치 파일
-│   │   ├── age_regression.pth
-│   │   ├── legacy_weight.pt
-│   │   ├── pretrained_weight_korean.pt
-│   │   └── vcop_mini.pth
-│   ├── loader/                     # 한국인 이미지셋 로딩 및 전처리
-│   │   ├── custom_dataset_dataloader_korean.py     # 커스텀 한국 이미지 로더
-│   │   └── custom_dataset_datasplitter_korean.py   # 학습/검증/테스트 분할 모듈
-│   └── evaluation/                 # 성능 평가 스크립트
+│   │   ├── age_regressor.py         # 🔹 VCOP encoder 기반 나이 회귀 모델 정의
+│   │   ├── base_model.py            # 🔹 ResNet 기반 기본/파인튜닝 모델 정의
+│   │   ├── r21d_mini.py             # 🔹 Mini R(2+1)D encoder 구조 정의
+│   │   └── vcop_head.py             # 🔹 VCOP 순서 예측을 위한 classifier head 정의
+│
+│   ├── weights/                    # 💾 학습된 모델 가중치 저장 경로
+│   │   ├── age_regression.pth               # 🔹 VCOP encoder → 회귀 모델 가중치
+│   │   ├── legacy_weight.pt                 # 🔹 ResNet base 학습 모델 가중치
+│   │   ├── pretrained_weight_korean.pt      # 🔹 Korean 데이터로 파인튜닝된 모델
+│   │   └── vcop_mini.pth                    # 🔹 VCOP 학습된 인코더 가중치
+│
+│   ├── loader/                     # 🗂 데이터 로더 및 분할 스크립트
+│   │   ├── custom_dataset_dataloader_korean.py     # 🔹 한국 이미지 커스텀 로더
+│   │   └── custom_dataset_datasplitter_korean.py   # 🔹 학습/검증/테스트 분할 스크립트
+│
+│   └── evaluation/                 # 📊 평가 스크립트
 │   │    ├── __init__.py
-│   │    ├── evaluate_base_kor.py           # Base model 및 Korean_finetuned Model 평가
-│   │    ├── evaluate_downstream.py         # downstream된 SSL 모델 단독 평가
-│   │    ├── evaluate_multitrain.py         # multitrain 모델 평가
-│   │    └── evaluate_vcop.py               # SSL 모델의 순서 맞추기 정확도 평가
-│   └── ssl-preTextTask.ipynb
-│   └── ssl-regression.ipynb
-│   └── basemodel-eval.ipynb
-│   └── finetune_base_to_kor.ipynb
-│   └── multitrain.ipynb
-│   └── config.py
-├── README.md                       # 이 문서
-└── requirements.txt  
+│   │    ├── evaluate_base_kor.py           # 🔹 baseline & Korean-finetuned 모델 평가
+│   │    ├── evaluate_downstream.py         # 🔹 VCOP encoder 기반 회귀 모델 평가
+│   │    ├── evaluate_multitrain.py         # 🔹 멀티 트레인 모델 평가
+│   │    └── evaluate_vcop.py               # 🔹 VCOP 순서 예측 성능 평가
+│
+│   ├── ssl-preTextTask.ipynb       # 📓 VCOP pretraining 수행 notebook
+│   ├── ssl-regression.ipynb        # 📓 VCOP → 나이 회귀 학습 notebook
+│   ├── basemodel-eval.ipynb        # 📓 baseline & finetuned 모델 평가 notebook
+│   ├── finetune_base_to_kor.ipynb  # 📓 ResNet 한국 데이터 파인튜닝 notebook
+│   ├── multitrain.ipynb            # 📓 두 모델 병렬 손실 학습 실험 notebook
+│   └── config.py                   # ⚙️ 실험별 설정 클래스 정의 파일
+│
+├── README.md                       # 📘 프로젝트 개요 및 실행 설명 문서
+└── requirements.txt               # 📦 Python 라이브러리 의존성 명시 파일
 
 ---
 ```
