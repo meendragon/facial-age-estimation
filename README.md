@@ -78,11 +78,17 @@ project/
 │   │   ├── custom_dataset_dataloader_korean.py     # 커스텀 한국 이미지 로더
 │   │   └── custom_dataset_datasplitter_korean.py   # 학습/검증/테스트 분할 모듈
 │   └── evaluation/                 # 성능 평가 스크립트
-│       ├── __init__.py
-│       ├── evaluate_base_kor.py           # Base model 및 Korean_finetuned Model 평가
-│       ├── evaluate_downstream.py         # downstream된 SSL 모델 단독 평가
-│       ├── evaluate_multitrain.py         # multitrain 모델 평가
-│       └── evaluate_vcop.py               # SSL 모델의 순서 맞추기 정확도 평가
+│   │    ├── __init__.py
+│   │    ├── evaluate_base_kor.py           # Base model 및 Korean_finetuned Model 평가
+│   │    ├── evaluate_downstream.py         # downstream된 SSL 모델 단독 평가
+│   │    ├── evaluate_multitrain.py         # multitrain 모델 평가
+│   │    └── evaluate_vcop.py               # SSL 모델의 순서 맞추기 정확도 평가
+│   └── ssl-preTextTask.ipynb
+│   └── ssl-regression.ipynb
+│   └── basemodel-eval.ipynb
+│   └── finetune_base_to_kor.ipynb
+│   └── multitrain.ipynb
+│   └── config.py
 ├── README.md                       # 이 문서
 └── requirements.txt  
 
