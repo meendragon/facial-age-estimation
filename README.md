@@ -112,6 +112,7 @@ project/
 ---
 
 **models/base_model.py**
+
 Baseline 모델 및, Baseline 모델을 한국인 이미지로 finetune한 모델의 구조를 정의하는 파일입니다.
 Baseline 모델은 Resnet50을 기반으로 하며, 비교적 간단한 FC 레이어를 가집니다.
 한국인 이미지로 finetune한 모델은 기존 Baseline 모델에 비해 더 깊은 FC 레이어를 가집니다.
@@ -120,6 +121,7 @@ Baseline 모델은 Resnet50을 기반으로 하며, 비교적 간단한 FC 레�
 ---
 
 **train/base_to_kor.py**
+
 Baseline 모델을 한국인 이미지셋으로 finetune하기 위해 필요한 모듈들이 정의된 파일입니다.
 전체 학습 과정은 아래와 같으며, 이를 위한 모듈들이 내부에 정의되어 있습니다.
 
