@@ -88,7 +88,7 @@ def train_vcop(X_train, y_train, X_val, y_val, config, all_perms):
             best_val_loss = avg_val_loss
             patience_counter = 0
             os.makedirs(config.save_dir, exist_ok=True)
-            model_name_with_suffix = config.model_name + 'w'
+            model_name_with_suffix = config.model_name
             best_model_path = os.path.join(config.save_dir, model_name_with_suffix)
             torch.save(model.state_dict(), best_model_path)
             print(f"✅ 모델 저장됨: {model_name_with_suffix}")
