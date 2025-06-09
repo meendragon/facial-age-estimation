@@ -19,7 +19,8 @@ class VCOPConfig(BaseConfig):
     model_name = "vcop_mini.pth"
     topk = 3
     patience = 5 
-    
+    model_path = "weights/vcop_mini.pth"
+      
     train_X_path = "./data/preTextData/train_X.pt"
     train_y_path = "./data/preTextData/train_y.pt"
     val_X_path = "./data/preTextData/val_X.pt"
@@ -27,7 +28,6 @@ class VCOPConfig(BaseConfig):
     test_X_path  = "./data/preTextData/test_X.pt"
     test_y_path  = "./data/preTextData/test_y.pt"
     pretrained_path = None
-
 
 # 📥 2. 다운스트림 태스크 (Age Regression)
 class AgeRegConfig(BaseConfig):
@@ -53,14 +53,7 @@ class AgeRegConfig(BaseConfig):
 
     
 # 🔎 1. SSL 성능 평가
-class VCOPEvalConfig(BaseConfig):
-    model_path = "weights/vcop_mini.pth"
-    tuple_len = 4
-    feature_size = 512
-    topk = 3
-
-    test_X_path = "./data/preTextData/test_X.pt"
-    test_y_path = "./data/preTextData/test_y.pt"
+"
 
 # 🔎 2. 다운스트림 성능 평가 (나이 회귀)
 class AgeRegEvalConfig(BaseConfig):
@@ -98,4 +91,3 @@ config = {
     'log_dir': 'logs',
     'cpu_workers': 0,
 }
-
