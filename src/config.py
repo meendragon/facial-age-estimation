@@ -44,27 +44,15 @@ class AgeRegConfig(BaseConfig):
     feature_size = 512
     tuple_len = 4
     warmup_epochs = 5
+    input_size = 112
     train_X_path = "./data/megaage_asian/train_X.pt"
     train_y_path = "./data/megaage_asian/train_y.pt"
     val_X_path   = "./data/megaage_asian/val_X.pt"
     val_y_path   = "./data/megaage_asian/val_y.pt"
     test_X_path  = "./data/megaage_asian/test_X.pt"
     test_y_path  = "./data/megaage_asian/test_y.pt"
-
+    model_path = "./src/weights/age_regression.pth"
     
-# 🔎 1. SSL 성능 평가
-"
-
-# 🔎 2. 다운스트림 성능 평가 (나이 회귀)
-class AgeRegEvalConfig(BaseConfig):
-    model_path = "weights/age_regression.pth"
-    test_X_path = "./data/megaage_asian/test_X.pt"
-    test_y_path = "./data/megaage_asian/test_y.pt"
-    
-    batch_size = 32             # 또는 64 등 적절한 값
-    feature_size = 512          # VCOP에서 사용된 encoder output dim과 동일해야 함
-    tuple_len = 4
-
 config = {
     'img_width': 128,
     'img_height': 128,
