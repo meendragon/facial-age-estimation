@@ -89,3 +89,27 @@ project/
 │       └── evaluate_vcop.py
 │
 └── README.md                       # 이 문서
+### 📂 주요 코드 파일 설명 – 사전학습 (VCOP)
+
+#### `models/r21d_mini.py`
+
+VCOP 사전학습에서 사용하는 인코더 정의 파일입니다.  
+영상 시계열 데이터를 처리하기 위해 **R(2+1)D 구조를 간소화한 `MiniR2Plus1D`** 클래스를 포함하고 있으며,  
+입력 시퀀스로부터 **공간적·시간적 특징(Spatiotemporal Features)** 을 추출하는 역할을 합니다.
+
+---
+
+#### `models/vcop_head.py`
+
+VCOP 태스크를 위한 **분류 헤드(classification head)** 정의 파일입니다.  
+인코더의 출력 특징을 기반으로, 입력된 시퀀스의 올바른 순서를 예측하는 데 사용됩니다.
+
+대표적으로 `VCOPN` 클래스는 다음과 같은 구조를 가집니다:
+
+- 인코더로부터 입력을 받아 `(B, C, T, H, W)` 형태의 피처맵을 출력  
+- `AdaptiveAvgPool3d(1)`을 통해 전체 시공간 차원을 평균 풀링하여 `(B, C)` 벡터로 축소  
+- 완전 연결층(`Fully Connected Layers`)을 거쳐 시퀀스 순열 수 `factorial(tuple_len)`에 해당하는 분류 결과 출력  
+
+👉 이 구조는 **얼마나 정확하게 시퀀스 순서를 예측할 수 있는가**를 학습하는 데 최적화되어 있으며,  
+인코더에 **시간 순서 감각(time-awareness)** 을 효과적으로 주입하는 역할을 합니다.
+
