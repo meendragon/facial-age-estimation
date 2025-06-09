@@ -297,7 +297,7 @@ pip install -r requirements.txt
 | `ssl-regression.ipynb` | 사전학습된 인코더를 활용해 얼굴 나이 회귀 모델을 학습합니다. |
 | `finetune_base_to_kor.ipynb` | 베이스 회귀 모델을 한국인 얼굴 데이터셋에 파인튜닝합니다. |
 | `basemodel-eval.ipynb` | 사전학습 없이 학습한 기본 베이스 모델의 회귀 성능을 평가합니다. |
-| `eval-all.ipynb` | 학습된 모든 모델을 불러와 성능을 **한눈에 비교 평가**할 수 있습니다. |
+| `multitrain.ipynb` | 학습된 모든 모델을 불러와 성능을 **한눈에 비교 평가**할 수 있습니다. |
 
 > 📌 `.ipynb` 파일은 Google Colab 또는 Jupyter Notebook 환경에서 실행 가능합니다.  
 > 사전 설정(`config.py`, `korean_config.py`)은 각 노트북 내에서 자동 불러오거나 수정 가능합니다.
