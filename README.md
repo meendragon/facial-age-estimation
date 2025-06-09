@@ -91,9 +91,19 @@ project/
 │       └── evaluate_vcop.py
 │
 └── README.md                       # 이 문서
+└── requirements.txt  
 
 ---
 ```
+## 📦 데이터셋 다운로드 안내
+
+학습에 사용된 원본 데이터는 아래 링크에서 수동 다운로드 후,  
+`data/` 디렉토리 아래에 배치해야 합니다:
+
+| 구분 | 링크 | 설명 |
+|------|------|------|
+| AIHub 한국인 얼굴 시계열 데이터 | [https://www.aihub.or.kr/aihubdata/data/view.do?dataSetSn=71415](https://www.aihub.or.kr/aihubdata/data/view.do?dataSetSn=71415) | 동일 인물의 다양한 연령대 얼굴 이미지 시퀀스 |
+| MegaAge-Asian | [https://www.dropbox.com/scl/fi/brq5o467fl2oz2u5oz0ng/megaage_asian.zip?rlkey=beyju63xv56jtyjuhn30367ae&dl=0](https://www.dropbox.com/scl/fi/brq5o467fl2oz2u5oz0ng/megaage_asian.zip?rlkey=beyju63xv56jtyjuhn30367ae&dl=0) | 아시아인 얼굴 이미지 + 연속적 나이 레이블 포함 |
 ---
 
 📂 주요 코드 파일 설명 – 사전학습 (VCOP)
