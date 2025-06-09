@@ -1,5 +1,7 @@
 Weight
   https://drive.google.com/drive/folders/1uN_XUPAtx8j6MHA-sZQweyA8LzwZTrtE?usp=drive_link
-
+  해당 링크에서 age_regression.pth, legacy_weight.pt, pretrained_weight_korean.pt, vcop_mini.pth만 다운받은 후,
+  위 네 파일들을 src/weights/ 아래에 넣으면 된다.
 Data
   https://drive.google.com/drive/folders/11oOSHB1zVcqwPHToNbhBPwRK-PEe8GNm?usp=sharing
+  해당 링크에 존재하는 데이터셋 관련 폴더 세 개를 data/ 아래에 그대로 넣으면 된다.
